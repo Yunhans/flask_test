@@ -30,7 +30,7 @@ def register_action():
     cur.execute(f'SELECT * FROM user WHERE `username`="{username}"')
     queryresult = cur.fetchall()
     if queryresult:
-        return 'username重複，請使用另一個usernme'
+        return 'username重複，請使用另一個username'
     # Insert a row of data
     cur.execute(f"INSERT INTO user (`username`, `email`, `password`) VALUES ('{username}','{email}','{password1}')")
     # Save (commit) the changes
