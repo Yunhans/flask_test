@@ -1,5 +1,9 @@
 import re, sqlite3
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request ,make_response,redirect
+from flask.templating import render_template_string
+import pandas as pd
+import time
+
 app = Flask(__name__)
 
 def register_action():
@@ -30,7 +34,7 @@ def register_action():
     cur.execute(f'SELECT * FROM user WHERE `username`="{username}"')
     queryresult = cur.fetchall()
     if queryresult:
-        return 'username重複，請使用另一個username'
+        return 'username重複，請使用另一個usernme'
     # Insert a row of data
     cur.execute(f"INSERT INTO user (`username`, `email`, `password`) VALUES ('{username}','{email}','{password1}')")
     # Save (commit) the changes
@@ -38,15 +42,50 @@ def register_action():
     # We can also close the connection if we are done with it.
     # Just be sure any changes have been committed or they will be lost.
     con.close()
-    return '註冊成功'
+    
+    return render_template('success.html')
+
+def do_the_login():
+    email = request.form.get('email', '')
+    password = request.form.get('password', '')
+    con = sqlite3.connect('mywebsite.db')
+    cur = con.cursor()
+    cur.execute(f'SELECT * FROM user WHERE `email`="{email}"')
+    queryresult1 = cur.fetchall()
+    if not queryresult1:
+        return '此email未註冊'
+    df = pd.read_sql(f'SELECT * FROM user WHERE `email`="{email}"',con)
+    if str(df['password'][0]) != str(password):
+        return 'email或password錯誤'
+    con.close()
+    username=df['username'][0]
+    email=df['email'][0]
+    resp = make_response(render_template('user.html', username=username, email=email))
+    value=username+','+email
+    resp.set_cookie(key='cookie', value=value)
+    return resp
+
+
+
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    cookie_value = request.cookies.get('cookie')
+    if cookie_value == None:
+        return render_template('base.html')
+    else :
+        username ,email= cookie_value.split(',')
+        return render_template('index.html',username=username,email=email)
 
-@app.route('/user/<username>')
-def show_user_profile(username):
-    return render_template('user.html', username = username)
+
+@app.route('/user/<username_type>')
+def show_user_profile():
+    cookie_value = request.cookies.get('cookie')
+    if  cookie_value == None:
+        return redirect(url_for('login'))
+    else :
+        username ,email= cookie_value.split(',')
+        return render_template('user.html',username=username,email=email)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
