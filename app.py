@@ -78,7 +78,7 @@ def index():
         return render_template('index.html',username=username,email=email)
 
 
-@app.route('/user/<username_type>')
+@app.route('/user')
 def show_user_profile():
     cookie_value = request.cookies.get('cookie')
     if  cookie_value == None:
