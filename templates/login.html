@@ -10,14 +10,14 @@
     <div class="col">
       <form action="{{ url_for('login') }}" method="POST">
         <div class="mb-3">
-          <label for="InputEmail1" class="form-label">Email address</label>
+          <label for="InputEmail1" class="form-label">郵件地址</label>
           <input type="email" name="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" value="{{ email }}">
         </div>
         <div class="mb-3">
-          <label for="InputPassword1" class="form-label">Password</label>
+          <label for="InputPassword1" class="form-label">密碼</label>
           <input type="password" name='password' class="form-control" id="InputPassword1">
         </div>
-        <input type="submit" class="btn btn-primary" value="Login">
+        <input type="submit" class="btn btn-primary" value="登錄">
       </form>
     </div>
   </div>

@@ -13,13 +13,13 @@ def register_action():
     password2 = request.form.get('password2', '')
 
     if not username:
-        return '請輸入username'
+        return '請輸入帳號名稱'
     elif not email:
-        return '請輸入email'
+        return '請輸入郵件地址'
     elif not password1:
-        return '請輸入password'
+        return '請輸入密碼'
     elif not password2:
-        return '請輸入password'
+        return '請輸入密碼'
     elif len(password1)<4:
         return '密碼必須大於4碼'
     elif not password1==password2:
@@ -30,11 +30,11 @@ def register_action():
     cur.execute(f'SELECT * FROM user WHERE `email`="{email}"')
     queryresult = cur.fetchall()
     if queryresult:
-        return 'email重複，請使用另一個email'
+        return '此郵件地址已被註冊'
     cur.execute(f'SELECT * FROM user WHERE `username`="{username}"')
     queryresult = cur.fetchall()
     if queryresult:
-        return 'username重複，請使用另一個usernme'
+        return '此帳號名稱已被註冊'
     # Insert a row of data
     cur.execute(f"INSERT INTO user (`username`, `email`, `password`) VALUES ('{username}','{email}','{password1}')")
     # Save (commit) the changes
@@ -53,10 +53,10 @@ def do_the_login():
     cur.execute(f'SELECT * FROM user WHERE `email`="{email}"')
     queryresult1 = cur.fetchall()
     if not queryresult1:
-        return '此email未註冊'
+        return '此郵件未註冊'
     df = pd.read_sql(f'SELECT * FROM user WHERE `email`="{email}"',con)
     if str(df['password'][0]) != str(password):
-        return 'email或password錯誤'
+        return '郵件地址或密碼錯誤'
     con.close()
     username=df['username'][0]
     email=df['email'][0]
@@ -104,6 +104,12 @@ def login():
         return do_the_login()
     else:
         return render_template('login.html')
+
+@app.route('/logout')
+def page_signout():
+    resp = make_response(render_template('logout.html'))
+    resp.delete_cookie(key='cookie')
+    return resp
 
 @app.errorhandler(404)
 def page_not_found(e):
