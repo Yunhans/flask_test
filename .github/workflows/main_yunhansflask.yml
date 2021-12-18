@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'yunhansflask'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_00DF18035B3A43349B6DFD5EF8782F92 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0CF95EF284904EF4B3DEF12DF30BE45A }}
